@@ -43,16 +43,17 @@ public class GoSixBySixState {
             for (int c = 0; c < BOARD_LENGTH - 1; c++) {
                 currentSquare = board[r][c];
 
+                if (currentSquare == BLACK) {
+                    boardString.append("B");
+                } else if (currentSquare == WHITE) {
+                    boardString.append("W");
+                }
+
                 // boardString.append(" -- ");
                 if (currentSquare == EMPTY) {
                     boardString.append("  -- ");
                 } else {
                     boardString.append("  -- ");
-                }
-                if (currentSquare == BLACK) {
-                    boardString.append("B");
-                } else if (currentSquare == WHITE) {
-                    boardString.append("W");
                 }
             }
             boardString.append("\n");
@@ -74,6 +75,9 @@ public class GoSixBySixState {
         state.makeMove(0, 0);
         // state.makeMove(5, 2, 2);
         System.out.println(state);
+        state.makeMove(3, 3);
+        System.out.println(state);
+
     }
 
 }
