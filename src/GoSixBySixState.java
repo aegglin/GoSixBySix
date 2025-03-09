@@ -1,6 +1,5 @@
-import java.util.Stack;
 
-public class GoSixBySixState {
+public class GoSixBySixState implements Cloneable {
 
     private static int EMPTY = 0;
     private static int BLACK = 1;
