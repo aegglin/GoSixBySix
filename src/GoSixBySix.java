@@ -32,6 +32,7 @@ public class GoSixBySix {
 
         //Must handle IO exception
         try {
+            //Image is an abstract super class
             Image image = ImageIO.read(new File("C:\\Users\\aiden\\java\\GoSixBySix\\GoPanel.png"));
             Image scaledImage = image.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
             ImageIcon icon = new ImageIcon(scaledImage);
