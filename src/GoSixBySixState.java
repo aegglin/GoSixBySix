@@ -9,13 +9,11 @@ public class GoSixBySixState implements Cloneable {
 
     private static int BOARD_LENGTH = 6;
 
-
     private int currentPlayer;
 
     public GoSixBySixState() {
         board = new int[BOARD_LENGTH][BOARD_LENGTH];
         currentPlayer = BLACK;
-
     }
 
     public GoSixBySixState(int[][] board, int currentPlayer) {
@@ -37,6 +35,26 @@ public class GoSixBySixState implements Cloneable {
         } else {
             return false;
         }
+    }
+
+    private int getNumberOfLiberties(int r, int c) {
+
+        int top = 0;
+        int bottom = 0;
+        int left = 0;
+        int right = 0;
+
+        if (!(r - 1 < 0) && board[r - 1][c] == EMPTY)
+            top++;
+        if (!(r + 1 >= BOARD_LENGTH) && board[r + 1][c] == EMPTY)
+            bottom++;
+        if (!(c - 1 < 0) && board[r][c - 1] == EMPTY)
+            left++;
+        if (!(c + 1 >= BOARD_LENGTH) && board[r][c + 1] == EMPTY)
+            right++;
+
+        return top + bottom + left + right;
+
     }
 
     @Override
@@ -105,6 +123,11 @@ public class GoSixBySixState implements Cloneable {
         System.out.println(state);
         state.makeMove(2, 2, false);
         System.out.println(state);
-    }
 
+        System.out.println("Number of liberties at (3, 3): " + state.getNumberOfLiberties(3, 3));
+        System.out.println("Number of liberties at (0, 0): " + state.getNumberOfLiberties(0, 0));
+        System.out.println("Number of liberties at (3, 2): " + state.getNumberOfLiberties(3, 2));
+        System.out.println("Number of liberties at (2, 1): " + state.getNumberOfLiberties(2, 1));
+
+    }
 }
