@@ -37,6 +37,7 @@ public class GoSixBySixState implements Cloneable {
         }
     }
 
+    // TODO: can this be done with recursion? Must a better way of doing this
     private int getNumberOfLiberties(int r, int c) {
 
         int top = 0;
@@ -54,7 +55,25 @@ public class GoSixBySixState implements Cloneable {
             right++;
 
         return top + bottom + left + right;
+    }
 
+    private int getGroupSize(int r, int c, int currentPlayer) {
+        if (r < 0 || c < 0 || r >= BOARD_LENGTH || c >= BOARD_LENGTH) {
+            return 0;
+        }
+
+        int groupAmount = 0;
+
+        if (board[r][c] == currentPlayer) {
+            groupAmount = 1;
+        }
+
+        int aboveStones = getGroupSize(r - 1, c, currentPlayer);
+        int belowStones = getGroupSize(r + 1, c, currentPlayer);
+        int leftStones = getGroupSize(r, c - 1, currentPlayer);
+        int rightStones = getGroupSize(r, c + 1, currentPlayer);
+
+        return groupAmount + aboveStones + belowStones + leftStones + rightStones;
     }
 
     @Override
@@ -113,15 +132,15 @@ public class GoSixBySixState implements Cloneable {
     public static void main(String[] args) {
         GoSixBySixState state = new GoSixBySixState();
         System.out.println(state);
-        state.makeMove(0, 0, false);
+        state.makeMove(0, 0, false); // black
         System.out.println(state);
-        state.makeMove(3, 3, false);
+        state.makeMove(3, 3, false); // white
         System.out.println(state);
-        state.makeMove(5, 2, false);
+        state.makeMove(5, 2, false); // black
         System.out.println(state);
-        state.makeMove(4, 1, false);
+        state.makeMove(4, 1, false); // white
         System.out.println(state);
-        state.makeMove(2, 2, false);
+        state.makeMove(2, 2, false); // black
         System.out.println(state);
 
         System.out.println("Number of liberties at (3, 3): " + state.getNumberOfLiberties(3, 3));
@@ -129,5 +148,24 @@ public class GoSixBySixState implements Cloneable {
         System.out.println("Number of liberties at (3, 2): " + state.getNumberOfLiberties(3, 2));
         System.out.println("Number of liberties at (2, 1): " + state.getNumberOfLiberties(2, 1));
 
+        state.makeMove(3, 4, false); // white
+        System.out.println(state);
+        state.makeMove(1, 2, false); // black
+        System.out.println(state);
+        state.makeMove(4, 0, false); // white
+        System.out.println(state);
+        state.makeMove(5, 3, false); // black
+        System.out.println(state);
+        state.makeMove(5, 0, false); // white
+        System.out.println(state);
+        state.makeMove(1, 3, false); // black
+        System.out.println(state);
+        state.makeMove(3, 0, false); // white
+        System.out.println(state);
+        state.makeMove(5, 4, false); // black
+        System.out.println(state);
+
+        System.out.println(state.getGroupSize(4, 0, WHITE));
+        // System.out.println(state.getGroupSize(4, 0, BLACK));
     }
 }
