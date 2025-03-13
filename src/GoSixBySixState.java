@@ -1,18 +1,18 @@
 
 public class GoSixBySixState implements Cloneable {
 
-    private static int EMPTY = 0;
-    private static int BLACK = 1;
-    private static int WHITE = 2;
+    public static int EMPTY = 0;
+    public static int BLACK = 1;
+    public static int WHITE = 2;
 
     private int[][] board;
 
-    private static int BOARD_LENGTH = 6;
+    public static int BOARD_SIZE = 6;
 
     private int currentPlayer;
 
     public GoSixBySixState() {
-        board = new int[BOARD_LENGTH][BOARD_LENGTH];
+        board = new int[BOARD_SIZE][BOARD_SIZE];
         currentPlayer = BLACK;
     }
 
@@ -22,7 +22,7 @@ public class GoSixBySixState implements Cloneable {
     }
 
     public boolean isValidMove(int row, int column) {
-        return row < BOARD_LENGTH && column < BOARD_LENGTH && board[row][column] == EMPTY;
+        return row < BOARD_SIZE && column < BOARD_SIZE && board[row][column] == EMPTY;
     }
 
     public boolean makeMove(int row, int column, boolean isPass) {
@@ -37,6 +37,14 @@ public class GoSixBySixState implements Cloneable {
         }
     }
 
+    public int getPiece(int row, int col) {
+        return board[row][col];
+    }
+
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     // TODO: can this be done with recursion? Must a better way of doing this
     private int getNumberOfLiberties(int r, int c) {
 
@@ -47,18 +55,18 @@ public class GoSixBySixState implements Cloneable {
 
         if (!(r - 1 < 0) && board[r - 1][c] == EMPTY)
             top++;
-        if (!(r + 1 >= BOARD_LENGTH) && board[r + 1][c] == EMPTY)
+        if (!(r + 1 >= BOARD_SIZE) && board[r + 1][c] == EMPTY)
             bottom++;
         if (!(c - 1 < 0) && board[r][c - 1] == EMPTY)
             left++;
-        if (!(c + 1 >= BOARD_LENGTH) && board[r][c + 1] == EMPTY)
+        if (!(c + 1 >= BOARD_SIZE) && board[r][c + 1] == EMPTY)
             right++;
 
         return top + bottom + left + right;
     }
 
     private int getGroupSize(int r, int c, int currentPlayer) {
-        if (r < 0 || c < 0 || r >= BOARD_LENGTH || c >= BOARD_LENGTH) {
+        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE) {
             return 0;
         }
 
@@ -79,9 +87,9 @@ public class GoSixBySixState implements Cloneable {
     @Override
     public GoSixBySixState clone() {
 
-        int[][] newBoard = new int[BOARD_LENGTH][BOARD_LENGTH];
-        for (int r = 0; r < BOARD_LENGTH; r++)
-            for (int c = 0; c < BOARD_LENGTH; c++)
+        int[][] newBoard = new int[BOARD_SIZE][BOARD_SIZE];
+        for (int r = 0; r < BOARD_SIZE; r++)
+            for (int c = 0; c < BOARD_SIZE; c++)
                 newBoard[r][c] = board[r][c];
 
         GoSixBySixState newState = new GoSixBySixState(newBoard, currentPlayer);
@@ -94,13 +102,13 @@ public class GoSixBySixState implements Cloneable {
         StringBuilder boardString = new StringBuilder();
         int currentSquare;
 
-        for (int rowLabel = 0; rowLabel < BOARD_LENGTH; rowLabel++)
+        for (int rowLabel = 0; rowLabel < BOARD_SIZE; rowLabel++)
             boardString.append("  " + rowLabel + "  ");
         boardString.append("\n");
 
-        for (int r = 0; r < BOARD_LENGTH; r++) {
+        for (int r = 0; r < BOARD_SIZE; r++) {
             boardString.append(r + " ");
-            for (int c = 0; c < BOARD_LENGTH - 1; c++) {
+            for (int c = 0; c < BOARD_SIZE - 1; c++) {
                 currentSquare = board[r][c];
 
                 if (currentSquare == BLACK) {
@@ -118,8 +126,8 @@ public class GoSixBySixState implements Cloneable {
             }
             boardString.append("\n");
 
-            if (r < BOARD_LENGTH - 1) {
-                for (int c = 0; c < BOARD_LENGTH; c++) {
+            if (r < BOARD_SIZE - 1) {
+                for (int c = 0; c < BOARD_SIZE; c++) {
                     boardString.append("  |  ");
                 }
                 boardString.append("\n");
