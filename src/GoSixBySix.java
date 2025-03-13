@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
-
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,6 +17,8 @@ public class GoSixBySix {
 
     private static final int BOARD_SIZE = 6;
     private static final JPanel[][] boardTiles = new JPanel[BOARD_SIZE][BOARD_SIZE];
+
+    private static final int BOARD_SQUARE_SIZE = 35;
 
     public GoSixBySix() {
 
@@ -43,7 +45,7 @@ public class GoSixBySix {
         try {
             //Image is an abstract super class
             Image image = ImageIO.read(new File("C:\\Users\\aiden\\java\\GoSixBySix\\GoPanel.png"));
-            Image scaledImage = image.getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+            Image scaledImage = image.getScaledInstance(BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE, Image.SCALE_SMOOTH);
             ImageIcon icon = new ImageIcon(scaledImage);
 
             for (int r = 0; r < BOARD_SIZE; r++) {
@@ -64,6 +66,15 @@ public class GoSixBySix {
         frame.pack(); // resize
         frame.setVisible(true);
 
+    }
+
+    class MouseHandler extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            requestFocusInWindow();
+            int pressRow = event.getY() / BOARD_SQUARE_SIZE;
+            int pressCol = event.getX() / BOARD_SQUARE_SIZE;
+        }
     }
 
     public static void main(String[] args) {
