@@ -100,7 +100,7 @@ class GoSixBySixPanel extends JPanel {
         @Override
         public void mouseReleased(MouseEvent event) {
             requestFocusInWindow();
-
+            repaint();
         }
     }
 }
