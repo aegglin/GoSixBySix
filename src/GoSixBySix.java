@@ -5,9 +5,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -32,34 +36,31 @@ class GoSixBySixPanel extends JPanel {
 
     private static final int IMAGE_SIZE_PIXELS = 80;
 
-    private static final String[] IMAGE_FILENAMES = { "GoPanel.png", "BlackStone.png", "WhiteStone.png" };
+    private static final String[] IMAGE_FILENAMES = { "GoPanel.png", "BlackStone65.png", "WhiteStone65.png" };
     Image[] images = new Image[3];
 
     private GoSixBySixState state = new GoSixBySixState();
 
     public GoSixBySixPanel() {
 
+        for (String image: IMAGE_FILENAMES)
+            System.out.println(image);
+
         this.setBackground(Color.GRAY);
         this.setPreferredSize(new Dimension(480, 480));
         this.setLayout(new GridLayout(GoSixBySixState.BOARD_SIZE, GoSixBySixState.BOARD_SIZE));
         this.setSize(480, 480);
 
-        for (int i = 0; i < IMAGE_FILENAMES.length; i++)
-            images[i] = getToolkit().getImage(IMAGE_FILENAMES[i]);
-        MediaTracker mt = new MediaTracker(this);
-        for (int i = 0; i < IMAGE_FILENAMES.length; i++)
-            mt.addImage(images[i], i);
-
         try {
-            mt.waitForAll();
-        } catch (Exception e) {
-            System.err.println("IO exception found while loading images.");
-        }
-        for (int i = 0; i < IMAGE_FILENAMES.length; i++)
-            if (images[i].getWidth(this) == 0) {
-                System.err.printf("Image \"%s\" not loaded.\n", IMAGE_FILENAMES[i]);
-                System.exit(0);
+            for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
+                File imageFile = new File(IMAGE_FILENAMES[i]);
+                System.out.printf("%s", imageFile.getName());
+                images[i] = ImageIO.read(imageFile);
             }
+        } catch (IOException e) {
+            System.err.println("Error reading in the files.");
+            e.printStackTrace();
+        }
 
         addMouseListener(new MouseHandler());
     }
@@ -71,17 +72,22 @@ class GoSixBySixPanel extends JPanel {
 
         for (int row = 0; row < GoSixBySixState.BOARD_SIZE; row++)
             for (int col = 0; col < GoSixBySixState.BOARD_SIZE; col++) {
-                int y = IMAGE_SIZE_PIXELS * row;
-                int x = IMAGE_SIZE_PIXELS * col;
+                int boardY = IMAGE_SIZE_PIXELS * row;
+                int boardX = IMAGE_SIZE_PIXELS * col;
 
-                g2d.drawImage(images[0], x, y, this);
+                g2d.drawImage(images[0], boardX, boardY, this);
                 int squareContents = state.getPiece(row, col);
 
+                int stoneY = (IMAGE_SIZE_PIXELS * row) - (IMAGE_SIZE_PIXELS / 3);
+                int stoneX = (IMAGE_SIZE_PIXELS * col) - (IMAGE_SIZE_PIXELS / 3);
+
                 if (squareContents == GoSixBySixState.EMPTY)
-                    g2d.drawImage(images[state.getCurrentPlayer()], x, y, this);
-
+                    g2d.drawImage(images[GoSixBySixState.EMPTY], boardX, boardY, this);
+                else if (squareContents == GoSixBySixState.BLACK)
+                    g2d.drawImage(images[GoSixBySixState.BLACK], stoneX, stoneY, this);
+                else if (squareContents == GoSixBySixState.WHITE)
+                    g2d.drawImage(images[GoSixBySixState.WHITE], stoneX, stoneY, this);
             }
-
     }
 
     class MouseHandler extends MouseAdapter {
