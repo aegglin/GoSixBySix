@@ -43,9 +43,6 @@ class GoSixBySixPanel extends JPanel {
 
     public GoSixBySixPanel() {
 
-        for (String image: IMAGE_FILENAMES)
-            System.out.println(image);
-
         this.setBackground(Color.GRAY);
         this.setPreferredSize(new Dimension(480, 480));
         this.setLayout(new GridLayout(GoSixBySixState.BOARD_SIZE, GoSixBySixState.BOARD_SIZE));
