@@ -51,7 +51,6 @@ class GoSixBySixPanel extends JPanel {
         try {
             for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
                 File imageFile = new File(IMAGE_FILENAMES[i]);
-                System.out.printf("%s", imageFile.getName());
                 images[i] = ImageIO.read(imageFile);
             }
         } catch (IOException e) {
