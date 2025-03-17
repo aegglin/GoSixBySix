@@ -66,15 +66,24 @@ public class GoSixBySixState implements Cloneable {
     }
 
     private int getGroupSize(int r, int c, int currentPlayer) {
-        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE) {
+        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE)
             return 0;
-        }
+        else if (board[r][c] != currentPlayer)
+            return 0;
 
         int groupAmount = 0;
 
-        if (board[r][c] == currentPlayer) {
-            groupAmount = 1;
-        }
+        if (board[r - 1][c] == currentPlayer)
+            return getGroupSize(r - 1, c, currentPlayer);
+
+        if (board[r][c - 1] == currentPlayer)
+            return getGroupSize(r, c - 1, currentPlayer);
+
+        if (board[r + 1][c] == currentPlayer)
+            return getGroupSize(r + 1, c, currentPlayer);
+
+        if (board[r][c + 1] == currentPlayer)
+            return getGroupSize(r, c + 1, currentPlayer);
 
         int aboveStones = getGroupSize(r - 1, c, currentPlayer);
         int belowStones = getGroupSize(r + 1, c, currentPlayer);
@@ -173,7 +182,7 @@ public class GoSixBySixState implements Cloneable {
         state.makeMove(5, 4, false); // black
         System.out.println(state);
 
-        System.out.println(state.getGroupSize(4, 0, WHITE));
+        // System.out.println(state.getGroupSize(4, 0, WHITE));
         // System.out.println(state.getGroupSize(4, 0, BLACK));
     }
 }

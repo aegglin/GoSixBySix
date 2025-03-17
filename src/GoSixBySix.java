@@ -19,12 +19,13 @@ import javax.swing.JPanel;
 public class GoSixBySix extends JFrame {
 
     public GoSixBySix() {
-        super(); // call the JFrame constructor
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("Go Six By Six");
-        this.add(new GoSixBySixPanel(), BorderLayout.CENTER);
-        this.pack();
-        this.setVisible(true);
+        // call JFrame constructor and setup methods
+        super();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Go Six By Six");
+        add(new GoSixBySixPanel(), BorderLayout.CENTER);
+        pack();
+        setVisible(true);
     }
 
     public static void main(String[] args) {
@@ -43,10 +44,11 @@ class GoSixBySixPanel extends JPanel {
 
     public GoSixBySixPanel() {
 
-        this.setBackground(Color.GRAY);
-        this.setPreferredSize(new Dimension(480, 480));
-        this.setLayout(new GridLayout(GoSixBySixState.BOARD_SIZE, GoSixBySixState.BOARD_SIZE));
-        this.setSize(480, 480);
+        // call JPanel setup methods
+        setBackground(Color.GRAY);
+        setPreferredSize(new Dimension(400, 400));
+        setLayout(new GridLayout(GoSixBySixState.BOARD_SIZE, GoSixBySixState.BOARD_SIZE));
+        setSize(400, 400);
 
         try {
             for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
