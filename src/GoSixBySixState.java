@@ -47,7 +47,6 @@ public class GoSixBySixState implements Cloneable {
         return currentPlayer;
     }
 
-    // TODO: Create a method to return the coordinates in the group
     // TODO: can this be done with recursion? Must a better way of doing this
     private int getNumberOfLiberties(int r, int c) {
 
