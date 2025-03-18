@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GoSixBySixState implements Cloneable {
 
@@ -66,20 +68,61 @@ public class GoSixBySixState implements Cloneable {
         return top + bottom + left + right;
     }
 
+    private ArrayList<int[]> getGroupCoords(int r, int c, int currentPlayer, boolean[][] visitedSquares,
+            ArrayList<int[]> groupCoords) {
+        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE)
+            return null;
+        if (board[r][c] != currentPlayer)
+            return null;
+        if (visitedSquares[r][c])
+            return null;
+
+        visitedSquares[r][c] = true;
+        int[] currentCoords = { r, c };
+        groupCoords.add(currentCoords);
+
+        if (r - 1 >= 0 && board[r - 1][c] == currentPlayer) {
+            getGroupCoords(r - 1, c, currentPlayer, visitedSquares, groupCoords);
+        }
+        if (c - 1 >= 0 && board[r][c - 1] == currentPlayer) {
+            getGroupCoords(r, c - 1, currentPlayer, visitedSquares, groupCoords);
+        }
+        if (r + 1 < BOARD_SIZE && board[r + 1][c] == currentPlayer) {
+            getGroupCoords(r + 1, c, currentPlayer, visitedSquares, groupCoords);
+        }
+        if (c + 1 < BOARD_SIZE && board[r][c + 1] == currentPlayer) {
+            getGroupCoords(r, c + 1, currentPlayer, visitedSquares, groupCoords);
+        }
+
+        return groupCoords;
+
+    }
+
     private int getGroupSize(int r, int c, int currentPlayer, boolean[][] visitedSquares) {
 
-        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE) return 0;
-        if (board[r][c] != currentPlayer) return 0;
-        if (visitedSquares[r][c]) return 0;
+        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE)
+            return 0;
+        if (board[r][c] != currentPlayer)
+            return 0;
+        if (visitedSquares[r][c])
+            return 0;
 
         visitedSquares[r][c] = true;
         int groupAmount = 1;
 
-        if (r - 1 >= 0 && board[r - 1][c] == currentPlayer) groupAmount += getGroupSize(r - 1, c, currentPlayer, visitedSquares);
-        if (c - 1 >= 0 && board[r][c - 1] == currentPlayer) groupAmount += getGroupSize(r, c - 1, currentPlayer, visitedSquares); 
-        if (r + 1 < BOARD_SIZE && board[r + 1][c] == currentPlayer) groupAmount += getGroupSize(r + 1, c, currentPlayer, visitedSquares);
-        if (c + 1 < BOARD_SIZE && board[r][c + 1] == currentPlayer) groupAmount += getGroupSize(r, c + 1, currentPlayer, visitedSquares);
- 
+        if (r - 1 >= 0 && board[r - 1][c] == currentPlayer) {
+            groupAmount += getGroupSize(r - 1, c, currentPlayer, visitedSquares);
+        }
+        if (c - 1 >= 0 && board[r][c - 1] == currentPlayer) {
+            groupAmount += getGroupSize(r, c - 1, currentPlayer, visitedSquares);
+        }
+        if (r + 1 < BOARD_SIZE && board[r + 1][c] == currentPlayer) {
+            groupAmount += getGroupSize(r + 1, c, currentPlayer, visitedSquares);
+        }
+        if (c + 1 < BOARD_SIZE && board[r][c + 1] == currentPlayer) {
+            groupAmount += getGroupSize(r, c + 1, currentPlayer, visitedSquares);
+        }
+
         return groupAmount;
     }
 
@@ -186,5 +229,17 @@ public class GoSixBySixState implements Cloneable {
 
         visited = new boolean[BOARD_SIZE][BOARD_SIZE];
         System.out.println(state.getGroupSize(1, 2, WHITE, visited));
+
+        visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        ArrayList<int[]> groupCoords = new ArrayList<>();
+        System.out.println(state.getGroupCoords(4, 0, BLACK, visited, groupCoords));
+
+        visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        groupCoords = new ArrayList<>();
+        System.out.println(state.getGroupCoords(4, 0, WHITE, visited, groupCoords));
+
+        for (int[] coord : groupCoords) {
+            System.out.println(Arrays.toString(coord));
+        }
     }
 }
