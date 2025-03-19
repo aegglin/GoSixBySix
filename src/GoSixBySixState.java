@@ -33,6 +33,7 @@ public class GoSixBySixState implements Cloneable {
                 board[row][column] = currentPlayer;
             }
             currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
+
             return true;
         } else {
             return false;
@@ -47,9 +48,19 @@ public class GoSixBySixState implements Cloneable {
         return currentPlayer;
     }
 
-    // TODO: can this be done with recursion? Must a better way of doing this
-    private int getNumberOfLiberties(int r, int c) {
+    private int getGroupNumberOfLiberties(int r, int c) {
+        ArrayList<int[]> groupCoords = getGroupCoords(r, c, currentPlayer, new boolean[BOARD_SIZE][BOARD_SIZE],
+                new ArrayList<int[]>());
 
+        int totalLiberties = 0;
+        for (int[] coord : groupCoords) {
+            totalLiberties += getNumberOfLiberties(coord[0], coord[1]);
+        }
+        return totalLiberties;
+    }
+
+    // TODO: can this be done with recursion? Must be a better way of doing this
+    private int getNumberOfLiberties(int r, int c) {
         int top = 0;
         int bottom = 0;
         int left = 0;
