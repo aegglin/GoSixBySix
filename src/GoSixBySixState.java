@@ -10,15 +10,18 @@ public class GoSixBySixState implements Cloneable {
     public static int BOARD_SIZE = 6;
 
     private int currentPlayer;
+    private int passStreak;
 
     public GoSixBySixState() {
         board = new int[BOARD_SIZE][BOARD_SIZE];
         currentPlayer = BLACK;
+        passStreak = 0;
     }
 
-    public GoSixBySixState(int[][] board, int currentPlayer) {
+    public GoSixBySixState(int[][] board, int currentPlayer, int passStreak) {
         this.board = board;
         this.currentPlayer = currentPlayer;
+        this.passStreak = passStreak;
     }
 
     public boolean isValidMove(int row, int column) {
@@ -26,10 +29,15 @@ public class GoSixBySixState implements Cloneable {
     }
 
     public boolean makeMove(int row, int column, boolean isPass) {
+        if (isPass){
+            passStreak++;
+            return true;
+        }
         if (isValidMove(row, column)) {
-            if (!isPass) {
-                board[row][column] = currentPlayer;
+            if (passStreak > 0) {
+                passStreak = 0;
             }
+            board[row][column] = currentPlayer;
             currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
             return true;
         } else {
@@ -45,8 +53,6 @@ public class GoSixBySixState implements Cloneable {
         return currentPlayer;
     }
 
-    // TODO: Create a method to return the coordinates in the group
-    // TODO: can this be done with recursion? Must a better way of doing this
     private int getNumberOfLiberties(int r, int c) {
 
         int top = 0;
