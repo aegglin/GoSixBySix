@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 public class GoSixBySix extends JFrame {
 
@@ -23,7 +24,9 @@ public class GoSixBySix extends JFrame {
         super();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Go Six By Six");
-        add(new GoSixBySixPanel(), BorderLayout.CENTER);
+        GoSixBySixPanel panel = new GoSixBySixPanel();
+        // panel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        add(panel, BorderLayout.CENTER);
         pack();
         setVisible(true);
     }
@@ -35,7 +38,7 @@ public class GoSixBySix extends JFrame {
 
 class GoSixBySixPanel extends JPanel {
 
-    private static final int IMAGE_SIZE_PIXELS = 80;
+    private static final int IMAGE_SIZE_PIXELS = 65;
 
     private static final String[] IMAGE_FILENAMES = { "GoPanel.png", "BlackStone65.png", "WhiteStone65.png" };
     Image[] images = new Image[3];
