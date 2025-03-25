@@ -25,7 +25,7 @@ public class GoSixBySix extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Go Six By Six");
         GoSixBySixPanel panel = new GoSixBySixPanel();
-        // panel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         add(panel, BorderLayout.CENTER);
         pack();
         setVisible(true);
@@ -49,9 +49,9 @@ class GoSixBySixPanel extends JPanel {
 
         // call JPanel setup methods
         setBackground(Color.GRAY);
-        setPreferredSize(new Dimension(400, 400));
+        setPreferredSize(new Dimension(420, 420));
         setLayout(new GridLayout(GoSixBySixState.BOARD_SIZE, GoSixBySixState.BOARD_SIZE));
-        setSize(400, 400);
+        setSize(420, 420);
 
         try {
             for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
@@ -70,15 +70,25 @@ class GoSixBySixPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        int padding = 10;
+
+        // Get the actual drawing area dimensions considering padding
+        int width = getWidth() - 2 * padding;
+        int height = getHeight() - 2 * padding;
+
+        // Draw a rectangle within the padded area
+        g.setColor(Color.RED);
+        g.fillRect(padding, padding, width, height);
 
         for (int row = 0; row < GoSixBySixState.BOARD_SIZE; row++)
             for (int col = 0; col < GoSixBySixState.BOARD_SIZE; col++) {
-                int boardY = IMAGE_SIZE_PIXELS * row;
-                int boardX = IMAGE_SIZE_PIXELS * col;
+                int boardY = IMAGE_SIZE_PIXELS * row - padding;
+                int boardX = IMAGE_SIZE_PIXELS * col - padding;
 
                 g2d.drawImage(images[0], boardX, boardY, this);
                 int squareContents = state.getPiece(row, col);
 
+                //Align the stone on the intersection of the lines, not the square itself
                 int stoneY = (IMAGE_SIZE_PIXELS * row) - (IMAGE_SIZE_PIXELS / 3);
                 int stoneX = (IMAGE_SIZE_PIXELS * col) - (IMAGE_SIZE_PIXELS / 3);
 
