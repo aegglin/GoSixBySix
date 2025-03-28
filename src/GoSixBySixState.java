@@ -1,5 +1,9 @@
+/*
+ * TODO: Count territory
+ *      Get board representation for saving the state and checking duplicates
+ */
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GoSixBySixState implements Cloneable {
 
@@ -7,23 +11,42 @@ public class GoSixBySixState implements Cloneable {
     public static int BLACK = 1;
     public static int WHITE = 2;
 
+    public static double KOMI = 2.5; //roughly scaled from the 6.5 in the 19 x 19 version
     private int[][] board;
 
     public static int BOARD_SIZE = 6;
 
     private int currentPlayer;
     private int passStreak;
+    private int numBlackPiecesCaptured;
+    private int numWhitePiecesCaptured;
 
     public GoSixBySixState() {
         board = new int[BOARD_SIZE][BOARD_SIZE];
         currentPlayer = BLACK;
         passStreak = 0;
+        numBlackPiecesCaptured = 0;
+        numWhitePiecesCaptured = 0;
     }
 
-    public GoSixBySixState(int[][] board, int currentPlayer, int passStreak) {
+    public GoSixBySixState(int[][] board, int currentPlayer, int passStreak, int numBlackPiecesCaptured, int numWhitePiecesCaptured) {
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.passStreak = passStreak;
+        this.numBlackPiecesCaptured = numBlackPiecesCaptured;
+        this.numWhitePiecesCaptured = numWhitePiecesCaptured;
+    }
+
+    public int countTerritory(int currentPlayer) {
+        return 0;
+    }
+
+    public int getWinner() {
+        //Must be doubles to compare with the komi
+        double blackScore = countTerritory(GoSixBySixState.BLACK) - numBlackPiecesCaptured;
+        double whiteScore = countTerritory(GoSixBySixState.WHITE) - numWhitePiecesCaptured + GoSixBySixState.KOMI;
+
+        return blackScore > whiteScore ? GoSixBySixState.BLACK : GoSixBySixState.WHITE;
     }
 
     @Override
@@ -34,7 +57,7 @@ public class GoSixBySixState implements Cloneable {
             for (int c = 0; c < BOARD_SIZE; c++)
                 newBoard[r][c] = board[r][c];
 
-        GoSixBySixState newState = new GoSixBySixState(newBoard, currentPlayer);
+        GoSixBySixState newState = new GoSixBySixState(newBoard, currentPlayer, passStreak, numBlackPiecesCaptured, numWhitePiecesCaptured);
         return newState;
 
     }
@@ -43,30 +66,30 @@ public class GoSixBySixState implements Cloneable {
         return currentPlayer;
     }
 
-    private ArrayList<int[]> getGroupCoords(int r, int c, int currentPlayer, boolean[][] visitedSquares,
+    private ArrayList<int[]> getGroupCoords(int row, int col, int currentPlayer, boolean[][] visitedSquares,
             ArrayList<int[]> groupCoords) {
-        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE)
+        if (row < 0 || col < 0 || row >= BOARD_SIZE || col >= BOARD_SIZE)
             return null;
-        if (board[r][c] != currentPlayer)
+        if (board[row][col] != currentPlayer)
             return null;
-        if (visitedSquares[r][c])
+        if (visitedSquares[row][col])
             return null;
 
-        visitedSquares[r][c] = true;
-        int[] currentCoords = { r, c };
+        visitedSquares[row][col] = true;
+        int[] currentCoords = { row, col };
         groupCoords.add(currentCoords);
 
-        if (r - 1 >= 0 && board[r - 1][c] == currentPlayer) {
-            getGroupCoords(r - 1, c, currentPlayer, visitedSquares, groupCoords);
+        if (row - 1 >= 0 && board[row - 1][col] == currentPlayer) {
+            getGroupCoords(row - 1, col, currentPlayer, visitedSquares, groupCoords);
         }
-        if (c - 1 >= 0 && board[r][c - 1] == currentPlayer) {
-            getGroupCoords(r, c - 1, currentPlayer, visitedSquares, groupCoords);
+        if (col - 1 >= 0 && board[row][col - 1] == currentPlayer) {
+            getGroupCoords(row, col - 1, currentPlayer, visitedSquares, groupCoords);
         }
-        if (r + 1 < BOARD_SIZE && board[r + 1][c] == currentPlayer) {
-            getGroupCoords(r + 1, c, currentPlayer, visitedSquares, groupCoords);
+        if (row + 1 < BOARD_SIZE && board[row + 1][col] == currentPlayer) {
+            getGroupCoords(row + 1, col, currentPlayer, visitedSquares, groupCoords);
         }
-        if (c + 1 < BOARD_SIZE && board[r][c + 1] == currentPlayer) {
-            getGroupCoords(r, c + 1, currentPlayer, visitedSquares, groupCoords);
+        if (col + 1 < BOARD_SIZE && board[row][col + 1] == currentPlayer) {
+            getGroupCoords(row, col + 1, currentPlayer, visitedSquares, groupCoords);
         }
 
         return groupCoords;
@@ -82,47 +105,47 @@ public class GoSixBySixState implements Cloneable {
         return totalLiberties;
     }
 
-    private int getGroupSize(int r, int c, int currentPlayer, boolean[][] visitedSquares) {
+    private int getGroupSize(int row, int col, int currentPlayer, boolean[][] visitedSquares) {
 
-        if (r < 0 || c < 0 || r >= BOARD_SIZE || c >= BOARD_SIZE)
+        if (row < 0 || col < 0 || row >= BOARD_SIZE || col >= BOARD_SIZE)
             return 0;
-        if (board[r][c] != currentPlayer)
+        if (board[row][col] != currentPlayer)
             return 0;
-        if (visitedSquares[r][c])
+        if (visitedSquares[row][col])
             return 0;
 
-        visitedSquares[r][c] = true;
+        visitedSquares[row][col] = true;
         int groupAmount = 1;
 
-        if (r - 1 >= 0 && board[r - 1][c] == currentPlayer) {
-            groupAmount += getGroupSize(r - 1, c, currentPlayer, visitedSquares);
+        if (row - 1 >= 0 && board[row - 1][col] == currentPlayer) {
+            groupAmount += getGroupSize(row - 1, col, currentPlayer, visitedSquares);
         }
-        if (c - 1 >= 0 && board[r][c - 1] == currentPlayer) {
-            groupAmount += getGroupSize(r, c - 1, currentPlayer, visitedSquares);
+        if (col - 1 >= 0 && board[row][col - 1] == currentPlayer) {
+            groupAmount += getGroupSize(row, col - 1, currentPlayer, visitedSquares);
         }
-        if (r + 1 < BOARD_SIZE && board[r + 1][c] == currentPlayer) {
-            groupAmount += getGroupSize(r + 1, c, currentPlayer, visitedSquares);
+        if (row + 1 < BOARD_SIZE && board[row + 1][col] == currentPlayer) {
+            groupAmount += getGroupSize(row + 1, col, currentPlayer, visitedSquares);
         }
-        if (c + 1 < BOARD_SIZE && board[r][c + 1] == currentPlayer) {
-            groupAmount += getGroupSize(r, c + 1, currentPlayer, visitedSquares);
+        if (col + 1 < BOARD_SIZE && board[row][col + 1] == currentPlayer) {
+            groupAmount += getGroupSize(row, col + 1, currentPlayer, visitedSquares);
         }
 
         return groupAmount;
     }
 
-    private int getNumberOfLiberties(int r, int c) {
+    private int getNumberOfLiberties(int row, int col) {
         int top = 0;
         int bottom = 0;
         int left = 0;
         int right = 0;
 
-        if (!(r - 1 < 0) && board[r - 1][c] == EMPTY)
+        if (!(row - 1 < 0) && board[row - 1][col] == EMPTY)
             top++;
-        if (!(r + 1 >= BOARD_SIZE) && board[r + 1][c] == EMPTY)
+        if (!(row + 1 >= BOARD_SIZE) && board[row + 1][col] == EMPTY)
             bottom++;
-        if (!(c - 1 < 0) && board[r][c - 1] == EMPTY)
+        if (!(col - 1 < 0) && board[row][col - 1] == EMPTY)
             left++;
-        if (!(c + 1 >= BOARD_SIZE) && board[r][c + 1] == EMPTY)
+        if (!(col + 1 >= BOARD_SIZE) && board[row][col + 1] == EMPTY)
             right++;
 
         return top + bottom + left + right;
@@ -132,15 +155,25 @@ public class GoSixBySixState implements Cloneable {
         return board[row][col];
     }
 
-    public boolean isValidMove(int row, int column) {
-        return row < BOARD_SIZE && column < BOARD_SIZE && board[row][column] == EMPTY;
+    public boolean isGameOver() {
+        return passStreak == 3;
     }
 
-    public boolean makeMove(int row, int column, boolean isPass) {
-        if (isValidMove(row, column)) {
-            if (!isPass) {
-                board[row][column] = currentPlayer;
-            }
+    public boolean isValidMove(int row, int col) {
+        return row < BOARD_SIZE && col < BOARD_SIZE && getPiece(row, col) == EMPTY;
+    }
+
+    public boolean makeMove(int row, int col, boolean isPass) {
+
+        if (isPass) {
+            passStreak++;
+            return true;
+        }
+        if (isValidMove(row, col)) {
+            if (passStreak != 0)
+                passStreak = 0;
+
+            setStone(row, col);
 
             int oppositePlayer = currentPlayer == BLACK ? WHITE : BLACK;
             boolean[][] visitedSquares;
@@ -150,14 +183,14 @@ public class GoSixBySixState implements Cloneable {
                 int topLiberties = 0;
                 visitedSquares = new boolean[BOARD_SIZE][BOARD_SIZE];
                 blankGroupCoords = new ArrayList<>();
-                ArrayList<int[]> topGroupCoords = getGroupCoords(row - 1, column, oppositePlayer, visitedSquares,
+                ArrayList<int[]> topGroupCoords = getGroupCoords(row - 1, col, oppositePlayer, visitedSquares,
                         blankGroupCoords);
 
                 if (topGroupCoords != null) {
                     topLiberties = getGroupNumberOfLiberties(topGroupCoords);
                     if (topLiberties == 0) {
                         for (int[] coord : topGroupCoords) {
-                            removeStone(coord[0], coord[1]);
+                            removeStone(coord[0], coord[1], currentPlayer);
                         }
                     }
                 }
@@ -167,62 +200,74 @@ public class GoSixBySixState implements Cloneable {
                 visitedSquares = new boolean[BOARD_SIZE][BOARD_SIZE];
                 blankGroupCoords = new ArrayList<>();
 
-                ArrayList<int[]> bottomGroupCoords = getGroupCoords(row + 1, column, oppositePlayer, visitedSquares,
+                ArrayList<int[]> bottomGroupCoords = getGroupCoords(row + 1, col, oppositePlayer, visitedSquares,
                         blankGroupCoords);
 
                 if (bottomGroupCoords != null) {
                     bottomLiberties = getGroupNumberOfLiberties(bottomGroupCoords);
                     if (bottomLiberties == 0) {
                         for (int[] coord : bottomGroupCoords) {
-                            removeStone(coord[0], coord[1]);
+                            removeStone(coord[0], coord[1], currentPlayer);
                         }
                     }
                 }
 
             }
-            if (column - 1 >= 0) {
+            if (col - 1 >= 0) {
                 int leftLiberties = 0;
                 visitedSquares = new boolean[BOARD_SIZE][BOARD_SIZE];
                 blankGroupCoords = new ArrayList<>();
-                ArrayList<int[]> leftGroupCoords = getGroupCoords(row, column - 1, oppositePlayer, visitedSquares,
+                ArrayList<int[]> leftGroupCoords = getGroupCoords(row, col - 1, oppositePlayer, visitedSquares,
                         blankGroupCoords);
 
                 if (leftGroupCoords != null) {
                     leftLiberties = getGroupNumberOfLiberties(leftGroupCoords);
                     if (leftLiberties == 0) {
                         for (int[] coord : leftGroupCoords) {
-                            removeStone(coord[0], coord[1]);
+                            removeStone(coord[0], coord[1], currentPlayer);
                         }
                     }
                 }
 
             }
-            if (column + 1 < BOARD_SIZE) {
+            if (col + 1 < BOARD_SIZE) {
                 int rightLiberties = 0;
                 visitedSquares = new boolean[BOARD_SIZE][BOARD_SIZE];
                 blankGroupCoords = new ArrayList<>();
-                ArrayList<int[]> rightGroupCoords = getGroupCoords(row, column + 1, oppositePlayer, visitedSquares,
+                ArrayList<int[]> rightGroupCoords = getGroupCoords(row, col + 1, oppositePlayer, visitedSquares,
                         blankGroupCoords);
 
                 if (rightGroupCoords != null) {
                     rightLiberties = getGroupNumberOfLiberties(rightGroupCoords);
                     if (rightLiberties == 0) {
                         for (int[] coord : rightGroupCoords) {
-                            removeStone(coord[0], coord[1]);
+                            removeStone(coord[0], coord[1], currentPlayer);
                         }
                     }
                 }
             }
-
+            //switch players
             currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
             return true;
         } else {
             return false;
         }
+        
     }
 
-    private void removeStone(int r, int c) {
-        board[r][c] = EMPTY;
+    private void removeStone(int row, int col, int currentPlayer) {
+        board[row][col] = EMPTY;
+
+        if (currentPlayer == BLACK) {
+            numWhitePiecesCaptured++;
+        } else {
+            numBlackPiecesCaptured++;
+        }
+
+    }
+    
+    private void setStone(int row, int col) {
+        board[row][col] = currentPlayer;
     }
 
     @Override
@@ -266,7 +311,6 @@ public class GoSixBySixState implements Cloneable {
         return boardString.toString();
     }
 
-    // Nothing in the last column shows up in the toString
 
     public static void main(String[] args) {
         GoSixBySixState state = new GoSixBySixState();
