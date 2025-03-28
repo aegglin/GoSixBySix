@@ -7,19 +7,18 @@ import java.util.ArrayList;
 
 public class GoSixBySixState implements Cloneable {
 
-    public static int EMPTY = 0;
-    public static int BLACK = 1;
-    public static int WHITE = 2;
+    public static final int EMPTY = 0;
+    public static final int BLACK = 1;
+    public static final int WHITE = 2;
+    public static final double KOMI = 2.5; //roughly scaled from the 6.5 in the 19 x 19 version
+    public static final int BOARD_SIZE = 6;
 
-    public static double KOMI = 2.5; //roughly scaled from the 6.5 in the 19 x 19 version
     private int[][] board;
-
-    public static int BOARD_SIZE = 6;
-
     private int currentPlayer;
-    private int passStreak;
     private int numBlackPiecesCaptured;
     private int numWhitePiecesCaptured;
+    private int passStreak;
+
 
     public GoSixBySixState() {
         board = new int[BOARD_SIZE][BOARD_SIZE];
@@ -38,7 +37,17 @@ public class GoSixBySixState implements Cloneable {
     }
 
     public int countTerritory(int currentPlayer) {
-        return 0;
+
+        int oppositePlayer = currentPlayer == GoSixBySixState.BLACK ? GoSixBySixState.WHITE : GoSixBySixState.BLACK;
+
+        int territory = 0;
+        for (int r = 0; r < BOARD_SIZE; r++) {
+            for (int c = 0; c < BOARD_SIZE; c++) {
+                if (getPiece(r, c) != oppositePlayer)
+                    territory++;
+            }
+        }
+        return territory;
     }
 
     public int getWinner() {
