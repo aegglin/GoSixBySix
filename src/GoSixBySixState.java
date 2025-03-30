@@ -37,6 +37,51 @@ public class GoSixBySixState implements Cloneable {
         this.numWhitePiecesCaptured = numWhitePiecesCaptured;
     }
 
+
+    public int countTerritoryIter(int currentPlayer) {
+
+        int currentStone = 0;
+        int totalTerritory = 0;
+        int territory = 0;
+
+        for (int r = 0; r < BOARD_SIZE; r++) {
+            for (int c = 0; c < BOARD_SIZE; c++) {
+                currentStone = getPiece(r, c);
+                if (currentStone == GoSixBySixState.EMPTY) {
+
+                    int bottomStone = 0;
+                    int topStone = 0;
+                    int rightStone = 0;
+                    int leftStone = 0;
+                
+                    if (r + 1 < GoSixBySixState.BOARD_SIZE)
+                        bottomStone = getPiece(r + 1, c);
+                    if (r - 1 > 0)
+                        topStone = getPiece(r - 1, c);
+                    if (c + 1 < GoSixBySixState.BOARD_SIZE)
+                        rightStone = getPiece(r, c + 1);
+                    if (c - 1 > 0)
+                        leftStone = getPiece(r, c - 1);
+                    
+                    // Check neighboring squares
+                    if ((bottomStone == GoSixBySixState.EMPTY || bottomStone == currentPlayer) 
+                        && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
+                        && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
+                        && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
+                            territory++;
+                    }
+                } else {
+                    //if it's a friendly stone, then add the territory up because the block is over
+                    if (currentStone == currentPlayer)
+                        totalTerritory += territory;
+                    //reset count to zero if we encounter either a friendly or enemy stone
+                    territory = 0;
+                }
+            }
+        }
+        return totalTerritory;
+    }
+
     //TODO: if we hit a piece of the currentPlayer, then you can return?
     //Another idea is to loop through each row and keep track of currentplayer stones until we see an enemy stone
     //Then when we do, we subtract the amount of currentplayer stones and reset the count to zero and keep going
