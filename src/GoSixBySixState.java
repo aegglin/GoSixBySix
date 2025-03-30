@@ -4,6 +4,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 
 public class GoSixBySixState implements Cloneable {
 
@@ -34,6 +35,53 @@ public class GoSixBySixState implements Cloneable {
         this.passStreak = passStreak;
         this.numBlackPiecesCaptured = numBlackPiecesCaptured;
         this.numWhitePiecesCaptured = numWhitePiecesCaptured;
+    }
+
+    //TODO: if we hit a piece of the currentPlayer, then you can return?
+    //Another idea is to loop through each row and keep track of currentplayer stones until we see an enemy stone
+    //Then when we do, we subtract the amount of currentplayer stones and reset the count to zero and keep going
+    public int countTerritoryPiece(int currentPlayer, int row, int col, int currentCount, boolean[][] visitedSquares) {
+
+        if (row < 0 || row >= GoSixBySixState.BOARD_SIZE || col < 0 || col >= GoSixBySixState.BOARD_SIZE)
+            return currentCount;
+        if (getPiece(row, col) != currentPlayer)
+            return 0;
+        if (visitedSquares[row][col])
+            return currentCount;
+        
+        visitedSquares[row][col] = true;
+
+        int bottomStone = 0;
+        int topStone = 0;
+        int rightStone = 0;
+        int leftStone = 0;
+
+        if (row + 1 < GoSixBySixState.BOARD_SIZE)
+            bottomStone = getPiece(row + 1, col);
+        if (row - 1 > 0)
+            topStone = getPiece(row - 1, col);
+        if (col + 1 < GoSixBySixState.BOARD_SIZE)
+            rightStone = getPiece(row, col + 1);
+        if (col - 1 > 0)
+            leftStone = getPiece(row, col - 1);
+
+        if ((bottomStone == GoSixBySixState.EMPTY || bottomStone == currentPlayer) 
+            && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
+            && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
+            && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
+                currentCount++;
+            }
+        //This isn't quite there because it'll look through the entire board and eventually we'll see a piece that's not ours
+        if (row + 1 < GoSixBySixState.BOARD_SIZE)
+            currentCount = countTerritoryPiece(currentPlayer, row + 1, col, currentCount, visitedSquares);
+        if (row - 1 > 0)
+            currentCount = countTerritoryPiece(currentPlayer, row - 1, col, currentCount, visitedSquares);
+        if (col + 1 < GoSixBySixState.BOARD_SIZE)
+            currentCount = countTerritoryPiece(currentPlayer, row, col + 1, currentCount, visitedSquares);
+        if (col - 1 > 0)
+            currentCount = countTerritoryPiece(currentPlayer, row, col - 1, currentCount, visitedSquares);
+
+        return currentCount;
     }
 
     public int countTerritory(int currentPlayer) {
