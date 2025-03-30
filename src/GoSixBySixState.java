@@ -20,6 +20,10 @@ public class GoSixBySixState implements Cloneable {
     private int numWhitePiecesCaptured;
     private int passStreak;
 
+    private ArrayList<int[]> blackTerritory = new ArrayList<>();
+    private ArrayList<int[]> totalTerritory = new ArrayList<>();
+
+    private ArrayList<int[]> whiteTerritory = new ArrayList<>();
 
     public GoSixBySixState() {
         board = new int[BOARD_SIZE][BOARD_SIZE];
@@ -36,7 +40,6 @@ public class GoSixBySixState implements Cloneable {
         this.numBlackPiecesCaptured = numBlackPiecesCaptured;
         this.numWhitePiecesCaptured = numWhitePiecesCaptured;
     }
-
 
     public int countTerritoryIter(int currentPlayer) {
 
@@ -68,12 +71,22 @@ public class GoSixBySixState implements Cloneable {
                         && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
                         && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
                         && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
+                            
+                            // if (currentPlayer == BLACK)
+                            //     blackTerritory.add(new int[]{r, c});
+                            // else if (currentPlayer == WHITE)
+                            //     whiteTerritory.add(new int[]{r, c});
                             territory++;
+                    } else {
+                        territory = 0;
                     }
                 } else {
                     //if it's a friendly stone, then add the territory up because the block is over
-                    if (currentStone == currentPlayer)
+                    if (currentStone == currentPlayer) {
                         totalTerritory += territory;
+                        System.out.printf("Row is: %d, col is: %d, territory is: %d\n", r, c, territory);
+                    }
+
                     //reset count to zero if we encounter either a friendly or enemy stone
                     territory = 0;
                 }
@@ -416,30 +429,27 @@ public class GoSixBySixState implements Cloneable {
 
     public static void main(String[] args) {
         GoSixBySixState state = new GoSixBySixState();
-        state.makeMove(0, 5, false);
-        state.makeMove(1, 5, false);
-        state.makeMove(2, 5, false);
-        state.makeMove(3, 5, false);
-        state.makeMove(4, 5, false);
-        state.makeMove(5, 5, false);
-        state.makeMove(6, 5, false); // should return false
 
-        // state.makeMove(0, 0, false); // black
-        // state.makeMove(3, 3, false); // white
-        // state.makeMove(2, 3, false); // black
-        // state.makeMove(0, 1, false); // white
-        // state.makeMove(3, 2, false); // black
-        // state.makeMove(3, 4, false); // white
-        // state.makeMove(1, 1, false); // black
-        // state.makeMove(5, 0, false); // white
-        // state.makeMove(4, 4, false); // black
-        // state.makeMove(3, 1, false); // white
-        // state.makeMove(4, 3, false); // black
-        // state.makeMove(0, 2, false); // white
-        // state.makeMove(3, 5, false); // black
-        // state.makeMove(1, 0, false); // white
-        // state.makeMove(2, 4, false); // black
+        state.makeMove(0, 0, false); // black
+        state.makeMove(3, 3, false); // white
+        state.makeMove(2, 3, false); // black
+        state.makeMove(0, 1, false); // white
+        state.makeMove(3, 2, false); // black
+        state.makeMove(3, 4, false); // white
+        state.makeMove(1, 1, false); // black
+        state.makeMove(5, 0, false); // white
+        state.makeMove(4, 4, false); // black
+        state.makeMove(3, 1, false); // white
+        state.makeMove(4, 3, false); // black
+        state.makeMove(0, 2, false); // white
+        state.makeMove(3, 5, false); // black
+        state.makeMove(1, 0, false); // white
+        state.makeMove(2, 4, false); // black
         System.out.println(state);
+        int blackTerritory = state.countTerritoryIter(BLACK);
+        int whiteTerritory = state.countTerritoryIter(WHITE);
 
+        System.out.printf("Black territory: %d\n", blackTerritory);
+        // System.out.printf("White territory: %d\n", whiteTerritory);
     }
 }
