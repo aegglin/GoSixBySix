@@ -20,11 +20,6 @@ public class GoSixBySixState implements Cloneable {
     private int numWhitePiecesCaptured;
     private int passStreak;
 
-    private ArrayList<int[]> blackTerritory = new ArrayList<>();
-    private ArrayList<int[]> totalTerritory = new ArrayList<>();
-
-    private ArrayList<int[]> whiteTerritory = new ArrayList<>();
-
     public GoSixBySixState() {
         board = new int[BOARD_SIZE][BOARD_SIZE];
         currentPlayer = BLACK;
@@ -41,119 +36,74 @@ public class GoSixBySixState implements Cloneable {
         this.numWhitePiecesCaptured = numWhitePiecesCaptured;
     }
 
-    public int countTerritoryIter(int currentPlayer) {
+    public int countTerritory(int currentPlayer) {
 
         int currentStone = 0;
         int totalTerritory = 0;
         int territory = 0;
 
+        boolean countRestarted = false;
+
         for (int r = 0; r < BOARD_SIZE; r++) {
+            countRestarted = true;
+            territory = 0;
             for (int c = 0; c < BOARD_SIZE; c++) {
                 currentStone = getPiece(r, c);
-                if (currentStone == GoSixBySixState.EMPTY) {
-
-                    int bottomStone = 0;
-                    int topStone = 0;
-                    int rightStone = 0;
-                    int leftStone = 0;
-                
-                    if (r + 1 < GoSixBySixState.BOARD_SIZE)
-                        bottomStone = getPiece(r + 1, c);
-                    if (r - 1 > 0)
-                        topStone = getPiece(r - 1, c);
-                    if (c + 1 < GoSixBySixState.BOARD_SIZE)
-                        rightStone = getPiece(r, c + 1);
-                    if (c - 1 > 0)
-                        leftStone = getPiece(r, c - 1);
-                    
-                    // Check neighboring squares
-                    if ((bottomStone == GoSixBySixState.EMPTY || bottomStone == currentPlayer) 
-                        && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
-                        && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
-                        && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
-                            
-                            // if (currentPlayer == BLACK)
-                            //     blackTerritory.add(new int[]{r, c});
-                            // else if (currentPlayer == WHITE)
-                            //     whiteTerritory.add(new int[]{r, c});
-                            territory++;
-                    } else {
-                        territory = 0;
-                    }
-                } else {
-                    //if it's a friendly stone, then add the territory up because the block is over
-                    if (currentStone == currentPlayer) {
-                        totalTerritory += territory;
-                        System.out.printf("Row is: %d, col is: %d, territory is: %d\n", r, c, territory);
-                    }
-
-                    //reset count to zero if we encounter either a friendly or enemy stone
-                    territory = 0;
+                System.out.printf("Row is: %d, col is: %d\n", r, c);
+                if (countRestarted && (currentStone == currentPlayer || r == 0)) {
+                    countRestarted = false;
+                    System.out.println("countRestarted reset");
                 }
+                if (!countRestarted) {
+                    System.out.println("Entered not count restarted if");
+                    if (currentStone == GoSixBySixState.EMPTY) {
+                        System.out.println("Current Stone is empty");
+                        
+                        int bottomStone = 0;
+                        int topStone = 0;
+                        int rightStone = 0;
+                        int leftStone = 0;
+                    
+                        if (r + 1 < GoSixBySixState.BOARD_SIZE)
+                            bottomStone = getPiece(r + 1, c);
+                        if (r - 1 > 0)
+                            topStone = getPiece(r - 1, c);
+                        if (c + 1 < GoSixBySixState.BOARD_SIZE)
+                            rightStone = getPiece(r, c + 1);
+                        if (c - 1 > 0)
+                            leftStone = getPiece(r, c - 1);
+                        
+                        System.out.println("Bottom stone: " + bottomStone);
+                        System.out.println("Top stone: " + topStone);
+                        System.out.println("Right stone: " + rightStone);
+                        System.out.println("Left stone: " + leftStone);
+
+                        // Check neighboring squares
+                        if ((bottomStone == GoSixBySixState.EMPTY || bottomStone == currentPlayer) 
+                            && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
+                            && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
+                            && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
+                                System.out.println("Added territory");
+                                territory++;
+                        }
+                    } else {
+                        System.out.println("Else");
+                        //if it's a friendly stone, then add the territory up because the block is over
+                        if (currentStone == currentPlayer || r == BOARD_SIZE - 1) {
+                            totalTerritory += territory;
+                        }
+                        //reset count to zero if we encounter either a friendly or enemy stone
+                        territory = 0;
+                        countRestarted = true;
+                    }
+                }
+                System.out.printf("Territory is: %d\n", r, c, territory);
+                System.out.printf("Total territory is: %d\n", r, c, totalTerritory);
+                System.out.println("countRestarted: " + countRestarted);
+                System.out.println("------");
             }
         }
         return totalTerritory;
-    }
-
-    //TODO: if we hit a piece of the currentPlayer, then you can return?
-    //Another idea is to loop through each row and keep track of currentplayer stones until we see an enemy stone
-    //Then when we do, we subtract the amount of currentplayer stones and reset the count to zero and keep going
-    public int countTerritoryPiece(int currentPlayer, int row, int col, int currentCount, boolean[][] visitedSquares) {
-
-        if (row < 0 || row >= GoSixBySixState.BOARD_SIZE || col < 0 || col >= GoSixBySixState.BOARD_SIZE)
-            return currentCount;
-        if (getPiece(row, col) != currentPlayer)
-            return 0;
-        if (visitedSquares[row][col])
-            return currentCount;
-        
-        visitedSquares[row][col] = true;
-
-        int bottomStone = 0;
-        int topStone = 0;
-        int rightStone = 0;
-        int leftStone = 0;
-
-        if (row + 1 < GoSixBySixState.BOARD_SIZE)
-            bottomStone = getPiece(row + 1, col);
-        if (row - 1 > 0)
-            topStone = getPiece(row - 1, col);
-        if (col + 1 < GoSixBySixState.BOARD_SIZE)
-            rightStone = getPiece(row, col + 1);
-        if (col - 1 > 0)
-            leftStone = getPiece(row, col - 1);
-
-        if ((bottomStone == GoSixBySixState.EMPTY || bottomStone == currentPlayer) 
-            && (topStone == GoSixBySixState.EMPTY || topStone == currentPlayer)
-            && (leftStone == GoSixBySixState.EMPTY || leftStone == currentPlayer)
-            && (rightStone == GoSixBySixState.EMPTY || rightStone == currentPlayer)) {
-                currentCount++;
-            }
-        //This isn't quite there because it'll look through the entire board and eventually we'll see a piece that's not ours
-        if (row + 1 < GoSixBySixState.BOARD_SIZE)
-            currentCount = countTerritoryPiece(currentPlayer, row + 1, col, currentCount, visitedSquares);
-        if (row - 1 > 0)
-            currentCount = countTerritoryPiece(currentPlayer, row - 1, col, currentCount, visitedSquares);
-        if (col + 1 < GoSixBySixState.BOARD_SIZE)
-            currentCount = countTerritoryPiece(currentPlayer, row, col + 1, currentCount, visitedSquares);
-        if (col - 1 > 0)
-            currentCount = countTerritoryPiece(currentPlayer, row, col - 1, currentCount, visitedSquares);
-
-        return currentCount;
-    }
-
-    public int countTerritory(int currentPlayer) {
-
-        int oppositePlayer = currentPlayer == GoSixBySixState.BLACK ? GoSixBySixState.WHITE : GoSixBySixState.BLACK;
-
-        int territory = 0;
-        for (int r = 0; r < BOARD_SIZE; r++) {
-            for (int c = 0; c < BOARD_SIZE; c++) {
-                if (getPiece(r, c) != oppositePlayer)
-                    territory++;
-            }
-        }
-        return territory;
     }
 
     public int getWinner() {
@@ -446,8 +396,8 @@ public class GoSixBySixState implements Cloneable {
         state.makeMove(1, 0, false); // white
         state.makeMove(2, 4, false); // black
         System.out.println(state);
-        int blackTerritory = state.countTerritoryIter(BLACK);
-        int whiteTerritory = state.countTerritoryIter(WHITE);
+        int blackTerritory = state.countTerritory(BLACK);
+        //int whiteTerritory = state.countTerritory(WHITE);
 
         System.out.printf("Black territory: %d\n", blackTerritory);
         // System.out.printf("White territory: %d\n", whiteTerritory);
