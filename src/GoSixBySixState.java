@@ -1,10 +1,12 @@
 /*
- * TODO: Count territory
- *      Get board representation for saving the state and checking duplicates
+ * TODO:    -Count territory
+ *          -Get board representation for saving the state and checking duplicates
+ *          -Make the colors an enum
+ * 
  */
 
 import java.util.ArrayList;
-import java.util.EmptyStackException;
+import java.util.HashMap;
 
 public class GoSixBySixState implements Cloneable {
 
@@ -13,6 +15,8 @@ public class GoSixBySixState implements Cloneable {
     public static final int WHITE = 2;
     public static final double KOMI = 2.5; //roughly scaled from the 6.5 in the 19 x 19 version
     public static final int BOARD_SIZE = 6;
+
+    private String[] players = {"Empty", "Black", "White"};
 
     private int[][] board;
     private int currentPlayer;
@@ -37,45 +41,126 @@ public class GoSixBySixState implements Cloneable {
     }
 
 
-    public int countTerritoryTest(int currentPlayer, int row, int col, int territory) {
-        int currentStone = getPiece(row, col);
-        if (currentStone == currentPlayer)
-            return territory;
+    public int countTerritoryTest(int currentPlayer) {
 
-        int oppositePlayer = currentPlayer == GoSixBySixState.BLACK ? GoSixBySixState.WHITE: GoSixBySixState.BLACK;
-        if (currentStone == oppositePlayer)
-            return 0;
+        int testRow = 0;
+        int testCol = 0;
 
-        int bottomStone = 0;
-        int topStone = 0;
-        int rightStone = 0;
-        int leftStone = 0;
-    
-        if (row + 1 < GoSixBySixState.BOARD_SIZE)
-            bottomStone = getPiece(row + 1, col);
-        if (row - 1 > 0)
-            topStone = getPiece(row - 1, col);
-        if (col + 1 < GoSixBySixState.BOARD_SIZE)
-            rightStone = getPiece(row, col + 1);
-        if (col - 1 > 0)
-            leftStone = getPiece(row, col - 1);
-        
-        if (bottomStone == oppositePlayer || topStone == oppositePlayer || leftStone == oppositePlayer || rightStone == oppositePlayer)
-            return 0;
-        if (currentStone == GoSixBySixState.EMPTY)
-            territory++;
+        int currStone = GoSixBySixState.EMPTY;
 
-        if (row + 1 < GoSixBySixState.BOARD_SIZE)
-            territory = countTerritoryTest(currentPlayer, row + 1, col, territory);
-        if (row - 1 > 0)
-            territory = countTerritoryTest(currentPlayer, row - 1, col, territory);
-        if (col + 1 < GoSixBySixState.BOARD_SIZE)
-            territory = countTerritoryTest(currentPlayer, row, col + 1, territory);
-        if (col - 1 > 0)
-            territory = countTerritoryTest(currentPlayer, row, col - 1, territory);
+        int nearestTopColor = GoSixBySixState.EMPTY;
+        int nearestBottomColor = GoSixBySixState.EMPTY;
+        int nearestLeftColor = GoSixBySixState.EMPTY;
+        int nearestRightColor = GoSixBySixState.EMPTY;
 
+        int territory = 0;
+
+        HashMap<int[], Integer> ownedSquares = new HashMap<>();
+
+        int oppositePlayer = currentPlayer == BLACK ? WHITE : BLACK;
+
+        for (int r = 0; r < BOARD_SIZE; r++) {
+            for (int c = 0; c < BOARD_SIZE; c++) {
+
+                testRow = r;
+                testCol = c;
+                currStone = getPiece(testRow, testCol);
+
+                if (currStone == GoSixBySixState.EMPTY) {
+                    System.out.println("Curr stone: " + currStone);
+                    System.out.printf("Testing at: %d, %d\n", testRow, testCol);
+            
+                    // Get nearest bottom stone
+                    nearestBottomColor = GoSixBySixState.EMPTY;
+                    while (testRow + 1 < BOARD_SIZE && currStone == EMPTY) {
+                        testRow++;
+                        currStone = getPiece(testRow, testCol);
+                    }
+                    if (currStone == currentPlayer) {
+                        nearestBottomColor = currentPlayer;
+                    }
+                    else if (currStone == oppositePlayer) {
+                        nearestBottomColor = oppositePlayer;
+                    }
+                    System.out.printf("Found at: %d %d\n", testRow, testCol);
+                    System.out.printf("Nearest bottom color is: %s\n", players[nearestBottomColor]);
+
+                    // Get nearest top stone
+                    nearestTopColor = GoSixBySixState.EMPTY;
+                    testRow = r;
+                    System.out.printf("Testing at: %d, %d\n", testRow, testCol);
+                    currStone = getPiece(testRow, testCol);
+                    while (testRow - 1 >= 0 && currStone == EMPTY) {
+                        testRow--;
+                        currStone = getPiece(testRow, testCol);
+                    }
+                    if (currStone == currentPlayer) {
+                        nearestTopColor = currentPlayer;
+                    }
+                    else if (currStone == oppositePlayer) {
+                        nearestTopColor = oppositePlayer;
+                    }
+                    System.out.printf("Found at: %d %d\n", testRow, testCol);
+                    System.out.printf("Nearest top color is: %s\n", players[nearestTopColor]);
+
+                    // Get nearest right stone
+                    nearestRightColor = GoSixBySixState.EMPTY;
+                    testRow = r;
+                    System.out.printf("Testing at: %d, %d\n", testRow, testCol);
+                    currStone = getPiece(testRow, testCol);
+                    while (testCol + 1 < BOARD_SIZE && currStone == EMPTY) {
+                        testCol++;
+                        currStone = getPiece(testRow, testCol);
+
+                    }
+                    if (currStone == currentPlayer) {
+                        nearestRightColor = currentPlayer;
+                    }
+                    else if (currStone == oppositePlayer) {
+                        nearestRightColor = oppositePlayer;
+                    }
+                    System.out.printf("Found at: %d %d\n", testRow, testCol);
+                    System.out.printf("Nearest right color is: %s\n", players[nearestRightColor]);
+
+                    // Get nearest left stone
+                    nearestLeftColor = GoSixBySixState.EMPTY;
+                    testCol = c;
+                    System.out.printf("Testing at: %d, %d\n", testRow, testCol);
+                    currStone = getPiece(testRow, testCol);
+                    while (testCol - 1 >= 0 && currStone == EMPTY) {
+                        testCol--;
+                        currStone = getPiece(testRow, testCol);
+
+                    }
+                    if (currStone == currentPlayer) {
+                        nearestLeftColor = currentPlayer;
+                    }
+                    else if (currStone == oppositePlayer) {
+                        nearestLeftColor = oppositePlayer;
+                    }
+                    System.out.printf("Found at: %d %d\n", testRow, testCol);
+                    System.out.printf("Nearest left color is: %s\n", players[nearestLeftColor]);
+
+                    if (nearestTopColor != oppositePlayer
+                        && nearestBottomColor != oppositePlayer
+                        && nearestRightColor != oppositePlayer
+                        && nearestLeftColor != oppositePlayer) {
+                            if (nearestTopColor == currentPlayer
+                                || nearestBottomColor == currentPlayer
+                                || nearestRightColor == currentPlayer
+                                || nearestLeftColor == currentPlayer) {
+                                    territory++;
+                                    ownedSquares.put(new int[] {r, c,}, currentPlayer);
+                            }
+                    }
+                }
+                System.out.println("Territory is: " + territory);
+                System.out.println("---");
+            }
+        }
+
+                
         return territory;
-
     }
 
     public int countTerritory(int currentPlayer) {
@@ -443,6 +528,6 @@ public class GoSixBySixState implements Cloneable {
 
         // System.out.printf("Black territory: %d\n", blackTerritory);
         // System.out.printf("White territory: %d\n", whiteTerritory);
-        System.out.println(state.countTerritoryTest(BLACK, 3, 3, 0));
+        System.out.println(state.countTerritoryTest(BLACK));
     }
 }
