@@ -36,6 +36,48 @@ public class GoSixBySixState implements Cloneable {
         this.numWhitePiecesCaptured = numWhitePiecesCaptured;
     }
 
+
+    public int countTerritoryTest(int currentPlayer, int row, int col, int territory) {
+        int currentStone = getPiece(row, col);
+        if (currentStone == currentPlayer)
+            return territory;
+
+        int oppositePlayer = currentPlayer == GoSixBySixState.BLACK ? GoSixBySixState.WHITE: GoSixBySixState.BLACK;
+        if (currentStone == oppositePlayer)
+            return 0;
+
+        int bottomStone = 0;
+        int topStone = 0;
+        int rightStone = 0;
+        int leftStone = 0;
+    
+        if (row + 1 < GoSixBySixState.BOARD_SIZE)
+            bottomStone = getPiece(row + 1, col);
+        if (row - 1 > 0)
+            topStone = getPiece(row - 1, col);
+        if (col + 1 < GoSixBySixState.BOARD_SIZE)
+            rightStone = getPiece(row, col + 1);
+        if (col - 1 > 0)
+            leftStone = getPiece(row, col - 1);
+        
+        if (bottomStone == oppositePlayer || topStone == oppositePlayer || leftStone == oppositePlayer || rightStone == oppositePlayer)
+            return 0;
+        if (currentStone == GoSixBySixState.EMPTY)
+            territory++;
+
+        if (row + 1 < GoSixBySixState.BOARD_SIZE)
+            territory = countTerritoryTest(currentPlayer, row + 1, col, territory);
+        if (row - 1 > 0)
+            territory = countTerritoryTest(currentPlayer, row - 1, col, territory);
+        if (col + 1 < GoSixBySixState.BOARD_SIZE)
+            territory = countTerritoryTest(currentPlayer, row, col + 1, territory);
+        if (col - 1 > 0)
+            territory = countTerritoryTest(currentPlayer, row, col - 1, territory);
+
+        return territory;
+
+    }
+
     public int countTerritory(int currentPlayer) {
 
         int currentStone = 0;
@@ -396,10 +438,11 @@ public class GoSixBySixState implements Cloneable {
         state.makeMove(1, 0, false); // white
         state.makeMove(2, 4, false); // black
         System.out.println(state);
-        int blackTerritory = state.countTerritory(BLACK);
+        // int blackTerritory = state.countTerritory(BLACK);
         //int whiteTerritory = state.countTerritory(WHITE);
 
-        System.out.printf("Black territory: %d\n", blackTerritory);
+        // System.out.printf("Black territory: %d\n", blackTerritory);
         // System.out.printf("White territory: %d\n", whiteTerritory);
+        System.out.println(state.countTerritoryTest(BLACK, 3, 3, 0));
     }
 }
