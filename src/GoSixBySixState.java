@@ -16,7 +16,9 @@ public class GoSixBySixState implements Cloneable {
     public static final double KOMI = 2.5; //roughly scaled from the 6.5 in the 19 x 19 version
     public static final int BOARD_SIZE = 6;
 
+    //TODO: make this player names and uncomment the int array?
     private String[] players = {"Empty", "Black", "White"};
+    // private  int[] players = {EMPTY, WHITE, BLACK};
 
     private int[][] board;
     private int currentPlayer;
@@ -41,6 +43,14 @@ public class GoSixBySixState implements Cloneable {
     }
 
 
+    // TODO:
+    // In some cases, the stone needs to be surrounded on three sides to be counted, in others it doesn't
+    // Do we need to take into account diagonals so (1, 3), (1, 4), and (1, 5) all don't count below? 
+    // Empty groups need to be all be taken together and all of the territory needs to pass the test of being empty or the desired play to count
+    // Proposed steps:
+    // 1. Add EMPTY to GetGroupCoords so it works and we can get the number of group coordinates
+    // 2. In countTerritory, just iterate through the empty coords
+    // 3. Make the below method to just check what the territory is for a given square (recursive?)
     public int countTerritoryTest(int currentPlayer) {
 
         int testRow = 0;
@@ -231,6 +241,20 @@ public class GoSixBySixState implements Cloneable {
             }
         }
         return totalTerritory;
+    }
+
+    public ArrayList<int[]> getEmptySquares() {
+
+        ArrayList<int[]> emptySquares = new ArrayList<>();
+
+        for (int r = 0; r < BOARD_SIZE; r++) {
+            for (int c = 0; c < BOARD_SIZE; c++) {
+                if (getPiece(r, c) == GoSixBySixState.EMPTY) {
+                    emptySquares.add(new int[] {r, c});
+                }
+            }
+        }
+        return emptySquares;
     }
 
     public int getWinner() {
