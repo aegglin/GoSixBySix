@@ -38,8 +38,10 @@ public class GoSixBySixAtari extends JFrame {
 
 class GoSixBySixPanel extends JPanel {
 
-    private static final int IMAGE_SIZE_PIXELS = 65;
+    private static final int STONE_IMAGE_SIZE_PIXELS = 65;
+    private static final int PANEL_IMAGE_SIZE_PIXELS = 102;
 
+    private static final String path = "C:\\Users\\aiden\\dev\\java\\GoSixBySixAtari\\";
     private static final String[] IMAGE_FILENAMES = { "GoPanel.png", "BlackStone65.png", "WhiteStone65.png" };
     Image[] images = new Image[3];
 
@@ -55,7 +57,7 @@ class GoSixBySixPanel extends JPanel {
 
         try {
             for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
-                File imageFile = new File(IMAGE_FILENAMES[i]);
+                File imageFile = new File(path + IMAGE_FILENAMES[i]);
                 images[i] = ImageIO.read(imageFile);
             }
         } catch (IOException e) {
@@ -70,27 +72,20 @@ class GoSixBySixPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        int padding = 10;
-
-        // Get the actual drawing area dimensions considering padding
-        int width = getWidth() - 2 * padding;
-        int height = getHeight() - 2 * padding;
 
         // Draw a rectangle within the padded area
-        g.setColor(Color.RED);
-        g.fillRect(padding, padding, width, height);
 
         for (int row = 0; row < GoSixBySixAtariState.BOARD_SIZE; row++)
             for (int col = 0; col < GoSixBySixAtariState.BOARD_SIZE; col++) {
-                int boardY = IMAGE_SIZE_PIXELS * row - padding;
-                int boardX = IMAGE_SIZE_PIXELS * col - padding;
+                int boardY = PANEL_IMAGE_SIZE_PIXELS * row;
+                int boardX = PANEL_IMAGE_SIZE_PIXELS * col;
 
                 g2d.drawImage(images[0], boardX, boardY, this);
                 int squareContents = state.getPiece(row, col);
 
                 //Align the stone on the intersection of the lines, not the square itself
-                int stoneY = (IMAGE_SIZE_PIXELS * row) - (IMAGE_SIZE_PIXELS / 3);
-                int stoneX = (IMAGE_SIZE_PIXELS * col) - (IMAGE_SIZE_PIXELS / 3);
+                int stoneY = (STONE_IMAGE_SIZE_PIXELS * row) - (STONE_IMAGE_SIZE_PIXELS / 3);
+                int stoneX = (STONE_IMAGE_SIZE_PIXELS * col) - (STONE_IMAGE_SIZE_PIXELS / 3);
 
                 if (squareContents == GoSixBySixAtariState.EMPTY)
                     g2d.drawImage(images[GoSixBySixAtariState.EMPTY], boardX, boardY, this);
@@ -105,9 +100,9 @@ class GoSixBySixPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent event) {
             requestFocusInWindow();
-            int pressRow = event.getY() / IMAGE_SIZE_PIXELS;
+            int pressRow = event.getY() / STONE_IMAGE_SIZE_PIXELS;
             System.out.println("PressRow is: " + pressRow);
-            int pressCol = event.getX() / IMAGE_SIZE_PIXELS;
+            int pressCol = event.getX() / STONE_IMAGE_SIZE_PIXELS;
             System.out.println("PressCol is: " + pressCol);
 
             state.makeMove(pressRow, pressCol);
