@@ -170,7 +170,7 @@ public class GoSixBySixAtariState implements Cloneable {
     }
 
     public boolean isValidMove(int row, int col) {
-        return row < BOARD_SIZE && col < BOARD_SIZE && getPiece(row, col) == EMPTY;
+        return row < BOARD_SIZE && col < BOARD_SIZE && row >= 0 && col >= 0 && getPiece(row, col) == EMPTY;
     }
 
     public boolean makeMove(int row, int col) {

@@ -51,7 +51,7 @@ class GoSixBySixPanel extends JPanel {
 
         // call JPanel setup methods
         setBackground(Color.GRAY);
-        setPreferredSize(new Dimension(420, 420));
+        setPreferredSize(new Dimension(612, 612));
         setLayout(new GridLayout(GoSixBySixAtariState.BOARD_SIZE, GoSixBySixAtariState.BOARD_SIZE));
         setSize(420, 420);
 
@@ -77,6 +77,7 @@ class GoSixBySixPanel extends JPanel {
 
         for (int row = 0; row < GoSixBySixAtariState.BOARD_SIZE; row++)
             for (int col = 0; col < GoSixBySixAtariState.BOARD_SIZE; col++) {
+
                 int boardY = PANEL_IMAGE_SIZE_PIXELS * row;
                 int boardX = PANEL_IMAGE_SIZE_PIXELS * col;
 
@@ -84,8 +85,8 @@ class GoSixBySixPanel extends JPanel {
                 int squareContents = state.getPiece(row, col);
 
                 //Align the stone on the intersection of the lines, not the square itself
-                int stoneY = (STONE_IMAGE_SIZE_PIXELS * row) - (STONE_IMAGE_SIZE_PIXELS / 3);
-                int stoneX = (STONE_IMAGE_SIZE_PIXELS * col) - (STONE_IMAGE_SIZE_PIXELS / 3);
+                int stoneY = (PANEL_IMAGE_SIZE_PIXELS * row) - (PANEL_IMAGE_SIZE_PIXELS / 3);
+                int stoneX = (PANEL_IMAGE_SIZE_PIXELS * col) - (PANEL_IMAGE_SIZE_PIXELS / 3);
 
                 if (squareContents == GoSixBySixAtariState.EMPTY)
                     g2d.drawImage(images[GoSixBySixAtariState.EMPTY], boardX, boardY, this);
@@ -100,9 +101,9 @@ class GoSixBySixPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent event) {
             requestFocusInWindow();
-            int pressRow = event.getY() / STONE_IMAGE_SIZE_PIXELS;
+            int pressRow = event.getY() / PANEL_IMAGE_SIZE_PIXELS;
             System.out.println("PressRow is: " + pressRow);
-            int pressCol = event.getX() / STONE_IMAGE_SIZE_PIXELS;
+            int pressCol = event.getX() / PANEL_IMAGE_SIZE_PIXELS;
             System.out.println("PressCol is: " + pressCol);
 
             state.makeMove(pressRow, pressCol);
