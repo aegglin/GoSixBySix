@@ -28,6 +28,7 @@ public class GoSixBySixAtari extends JFrame {
         panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         add(panel, BorderLayout.CENTER);
         pack();
+        setResizable(false);
         setVisible(true);
     }
 
@@ -52,6 +53,8 @@ class GoSixBySixPanel extends JPanel {
         // call JPanel setup methods
         setBackground(Color.GRAY);
         setPreferredSize(new Dimension(612, 612));
+        setDoubleBuffered(true);
+        setFocusable(true);
         setLayout(new GridLayout(GoSixBySixAtariState.BOARD_SIZE, GoSixBySixAtariState.BOARD_SIZE));
         setSize(420, 420);
 
@@ -84,7 +87,7 @@ class GoSixBySixPanel extends JPanel {
                 g2d.drawImage(images[0], boardX, boardY, this);
                 int squareContents = state.getPiece(row, col);
 
-                //Align the stone on the intersection of the lines, not the square itself
+                // Align the stone on the intersection of the lines, not the square itself
                 int stoneY = (PANEL_IMAGE_SIZE_PIXELS * row) - (PANEL_IMAGE_SIZE_PIXELS / 3);
                 int stoneX = (PANEL_IMAGE_SIZE_PIXELS * col) - (PANEL_IMAGE_SIZE_PIXELS / 3);
 

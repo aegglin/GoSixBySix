@@ -13,9 +13,9 @@ public class GoSixBySixAtariState implements Cloneable {
     public static final int WHITE = 2;
     public static final int BOARD_SIZE = 6;
 
-    //TODO: make this player names and uncomment the int array?
-    private String[] players = {"Empty", "Black", "White"};
-    // private  int[] players = {EMPTY, WHITE, BLACK};
+    // TODO: make this player names and uncomment the int array?
+    private String[] players = { "Empty", "Black", "White" };
+    // private int[] players = {EMPTY, WHITE, BLACK};
 
     private int[][] board;
     private int currentPlayer;
@@ -46,7 +46,7 @@ public class GoSixBySixAtariState implements Cloneable {
         for (int r = 0; r < BOARD_SIZE; r++) {
             for (int c = 0; c < BOARD_SIZE; c++) {
                 if (getPiece(r, c) == GoSixBySixAtariState.EMPTY) {
-                    emptySquares.add(new int[] {r, c});
+                    emptySquares.add(new int[] { r, c });
                 }
             }
         }
@@ -250,13 +250,13 @@ public class GoSixBySixAtariState implements Cloneable {
                     }
                 }
             }
-            //switch players
+            // switch players
             currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
             return true;
         } else {
             return false;
         }
-        
+
     }
 
     private void removeStone(int row, int col, int currentPlayer) {
@@ -269,7 +269,7 @@ public class GoSixBySixAtariState implements Cloneable {
         }
 
     }
-    
+
     private void setStone(int row, int col) {
         board[row][col] = currentPlayer;
     }
@@ -314,7 +314,6 @@ public class GoSixBySixAtariState implements Cloneable {
         }
         return boardString.toString();
     }
-
 
     public static void main(String[] args) {
         GoSixBySixAtariState state = new GoSixBySixAtariState();
