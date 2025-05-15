@@ -19,11 +19,16 @@ import javax.swing.border.EmptyBorder;
 
 public class GoSixBySixAtari extends JFrame {
 
+
     public GoSixBySixAtari() {
         // call JFrame constructor and setup methods
         super();
+
+        //Set up JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Go Six By Six");
+        setResizable(false);
+        setLocationRelativeTo(null);
         GoSixBySixPanel panel = new GoSixBySixPanel();
         panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         add(panel, BorderLayout.CENTER);
@@ -41,28 +46,33 @@ class GoSixBySixPanel extends JPanel {
     private static final int STONE_IMAGE_SIZE_PIXELS = 65;
     private static final int PANEL_IMAGE_SIZE_PIXELS = 102;
 
-    private static final String path = "C:\\Users\\aiden\\dev\\java\\GoSixBySixAtari\\";
     private static final String[] IMAGE_FILENAMES = { "GoPanel.png", "BlackStone65.png", "WhiteStone65.png" };
     Image[] images = new Image[3];
 
-    private GoSixBySixAtariState state = new GoSixBySixAtariState();
+    private GoSixBySixAtariState state;
 
     public GoSixBySixPanel() {
 
+        state = new GoSixBySixAtariState();
+
         // call JPanel setup methods
         setBackground(Color.GRAY);
+        setFocusable(true);
         setPreferredSize(new Dimension(612, 612));
+        setDoubleBuffered(true);
         setLayout(new GridLayout(GoSixBySixAtariState.BOARD_SIZE, GoSixBySixAtariState.BOARD_SIZE));
         setSize(420, 420);
 
+        File imageFile = null;
+
         try {
             for (int i = 0; i < IMAGE_FILENAMES.length; i++) {
-                File imageFile = new File(path + IMAGE_FILENAMES[i]);
+                imageFile = new File("res/" + IMAGE_FILENAMES[i]);
                 images[i] = ImageIO.read(imageFile);
             }
         } catch (IOException e) {
-            System.err.println("Error reading in the files.");
-            e.printStackTrace();
+            System.err.printf("Image \"%s\" not loaded.\n", imageFile);
+            System.exit(0);
         }
 
         addMouseListener(new MouseHandler());
@@ -74,8 +84,7 @@ class GoSixBySixPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
 
         // Draw a rectangle within the padded area
-
-        for (int row = 0; row < GoSixBySixAtariState.BOARD_SIZE; row++)
+        for (int row = 0; row < GoSixBySixAtariState.BOARD_SIZE; row++) {
             for (int col = 0; col < GoSixBySixAtariState.BOARD_SIZE; col++) {
 
                 int boardY = PANEL_IMAGE_SIZE_PIXELS * row;
@@ -95,6 +104,7 @@ class GoSixBySixPanel extends JPanel {
                 else if (squareContents == GoSixBySixAtariState.WHITE)
                     g2d.drawImage(images[GoSixBySixAtariState.WHITE], stoneX, stoneY, this);
             }
+        }
     }
 
     class MouseHandler extends MouseAdapter {
@@ -102,9 +112,7 @@ class GoSixBySixPanel extends JPanel {
         public void mousePressed(MouseEvent event) {
             requestFocusInWindow();
             int pressRow = event.getY() / PANEL_IMAGE_SIZE_PIXELS;
-            System.out.println("PressRow is: " + pressRow);
             int pressCol = event.getX() / PANEL_IMAGE_SIZE_PIXELS;
-            System.out.println("PressCol is: " + pressCol);
 
             state.makeMove(pressRow, pressCol);
             repaint();

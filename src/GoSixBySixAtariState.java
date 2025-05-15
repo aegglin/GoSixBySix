@@ -65,7 +65,6 @@ public class GoSixBySixAtariState implements Cloneable {
 
     @Override
     public GoSixBySixAtariState clone() {
-
         int[][] newBoard = new int[BOARD_SIZE][BOARD_SIZE];
         for (int r = 0; r < BOARD_SIZE; r++)
             for (int c = 0; c < BOARD_SIZE; c++)
@@ -169,19 +168,23 @@ public class GoSixBySixAtariState implements Cloneable {
         return board[row][col];
     }
 
+    public boolean isGameOver() {
+        return blackPieceCaptured || whitePieceCaptured;
+    }
+
     public boolean isValidMove(int row, int col) {
-        return row < BOARD_SIZE && col < BOARD_SIZE && row >= 0 && col >= 0 && getPiece(row, col) == EMPTY;
+        return !isGameOver() && row < BOARD_SIZE && col < BOARD_SIZE && row >= 0 && col >= 0 && getPiece(row, col) == EMPTY;
     }
 
     public boolean makeMove(int row, int col) {
 
         if (isValidMove(row, col)) {
-
             setStone(row, col);
-
             int oppositePlayer = currentPlayer == BLACK ? WHITE : BLACK;
             boolean[][] visitedSquares;
             ArrayList<int[]> blankGroupCoords;
+
+            boolean hasCapturedPiece = false;
 
             if (row - 1 >= 0) {
                 int topLiberties = 0;
@@ -195,6 +198,7 @@ public class GoSixBySixAtariState implements Cloneable {
                     if (topLiberties == 0) {
                         for (int[] coord : topGroupCoords) {
                             removeStone(coord[0], coord[1], currentPlayer);
+                            hasCapturedPiece = true;
                         }
                     }
                 }
@@ -212,6 +216,7 @@ public class GoSixBySixAtariState implements Cloneable {
                     if (bottomLiberties == 0) {
                         for (int[] coord : bottomGroupCoords) {
                             removeStone(coord[0], coord[1], currentPlayer);
+                            hasCapturedPiece = true;
                         }
                     }
                 }
@@ -229,6 +234,7 @@ public class GoSixBySixAtariState implements Cloneable {
                     if (leftLiberties == 0) {
                         for (int[] coord : leftGroupCoords) {
                             removeStone(coord[0], coord[1], currentPlayer);
+                            hasCapturedPiece = true;
                         }
                     }
                 }
@@ -246,12 +252,22 @@ public class GoSixBySixAtariState implements Cloneable {
                     if (rightLiberties == 0) {
                         for (int[] coord : rightGroupCoords) {
                             removeStone(coord[0], coord[1], currentPlayer);
+                            hasCapturedPiece = true;
                         }
                     }
                 }
             }
-            //switch players
-            currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
+            if (hasCapturedPiece) {
+                if (currentPlayer == BLACK) {
+                    whitePieceCaptured = true;
+                }
+                if (currentPlayer == WHITE) {
+                    blackPieceCaptured = true;
+                }
+            } else {
+                //switch players
+                currentPlayer = currentPlayer == BLACK ? WHITE : BLACK;
+            }
             return true;
         } else {
             return false;
